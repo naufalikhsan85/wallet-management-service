@@ -7,6 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { compressToken, decompressToken } from "../utils/compress.utils";
 import { sendRegisterVerificationEmail } from "./mail.services";
 import { cacheJti, isJtiUsed, markJtiAsUsed, queryToken } from "./token-caches.services";
+import { emitRegistrationEvent } from "./activityLogs.services";
 
 const PREFIX = 'verify-token';
 
@@ -54,13 +55,18 @@ const verify = async(token: string): Promise<RegisterParam> =>{
 
     //create user
     const newUUID = uuidv4()
-    await create({
+    let result = await create({
         uuid: newUUID,
         username: dataUser.username,
         email: dataUser.isEmail ? dataUser.contact : newUUID,
         phone: !dataUser.isEmail ? dataUser.contact : newUUID,
 
     })
+
+    await emitRegistrationEvent(
+        result.id, 
+        dataUser.isEmail ? "registered with email" : "registered with phone"
+    )
     
     return dataUser
 }
