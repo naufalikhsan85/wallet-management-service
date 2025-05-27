@@ -7,4 +7,6 @@ export const APPConfig = {
   MAX_SIZE: Number(process.env.MAX_SIZE) || 1,
   LOGS: process.env.LOGS || "./",
   ENABLE_STREAMLOG: Boolean(process.env.ENABLE_STREAMLOG) || false,
+  SHORTENER: process.env.SHORTENER || "",
+  RESOLVER: process.env.RESOLVER || ""
 };

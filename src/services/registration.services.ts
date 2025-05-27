@@ -8,6 +8,7 @@ import { compressToken, decompressToken } from "../utils/compress.utils";
 import { sendRegisterVerificationEmail } from "./mail.services";
 import { cacheJti, isJtiUsed, markJtiAsUsed, queryToken } from "./token-caches.services";
 import { emitRegistrationEvent } from "./activityLogs.services";
+import { RedisConfig } from "../configs/redis.configs";
 
 const PREFIX = 'verify-token';
 
@@ -23,7 +24,7 @@ const register = async(dataUser: RegisterParam)=>{
     //create token
     let raw = generateToken(dataUser)
     let token = await compressToken(raw.token)
-    await cacheJti(PREFIX, raw.jti, 60 * 1); //in second * minute
+    await cacheJti(PREFIX, raw.jti, 60 * RedisConfig.REDIS_REGIS_EXPIRITY); //in second * minute
 
     if(dataUser.isEmail){ //send email
         await sendRegisterVerificationEmail({ 

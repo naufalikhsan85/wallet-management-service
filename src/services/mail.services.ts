@@ -2,6 +2,8 @@ import fs from 'fs';
 import nodemailer from 'nodemailer';
 import { MailConfig } from '../configs/mail.configs';
 import { SendVerificationEmailParams } from '../types/mail.types';
+import { shortenUrl } from './shortener.service';
+import { APPConfig } from '../configs/app.configs';
 
 const transporter = nodemailer.createTransport({
   host: 'smtp.gmail.com',
@@ -23,7 +25,8 @@ const sendRegisterVerificationEmail = async ({
   token,
   baseUrl = 'http://localhost:8080/v1/registration/verify?token=',
 }: SendVerificationEmailParams): Promise<void> =>{
-  const verifyUrl = `${baseUrl}${token}`;
+  const raw_url = `${baseUrl}${token}`;
+  const verifyUrl = APPConfig.RESOLVER + await shortenUrl(raw_url)
   const htmlContent = await loadRegisterVerificationEmailTemplate(verifyUrl, username, expirity);
 
   const mailOptions = {

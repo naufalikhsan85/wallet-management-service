@@ -3,6 +3,7 @@ import { RegistrationParamsSchema, verificationParamsSchema } from "../validatio
 import * as registration from '../services/registration.services'
 import { RegisterParam } from '../types/registration.types';
 import { handleZodBodyError, handleZodParamsError } from '../utils/controller.utils';
+import fs from 'fs';
 
 const register = async (req: Request, res: Response) => {
   try {
@@ -35,9 +36,16 @@ const verify = async (req: Request, res: Response) => {
 
     if (!handleZodParamsError(parsed, res)) return;
 
-    const result = await registration.verify(parsed.data.token);
+    let result = await registration.verify(parsed.data.token);
 
-    res.status(200).send(result);
+    const templatePath = "./src/templates/register-verified.html"
+    let template = fs.readFileSync(templatePath, 'utf-8');
+    template = template
+              .replace(/{{username}}/g, result.username)
+              .replace(/{{contact}}/g, result.contact)
+              .replace(/{{registered_with}}/g, result.isEmail ? "email" : "phone number");
+
+    res.status(200).send(template);
     return
   } catch (e: any) {
     console.log('Error during verify new user:', e.message);
