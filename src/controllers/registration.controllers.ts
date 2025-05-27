@@ -10,9 +10,11 @@ const register = async (req: Request, res: Response) => {
 
     if (!handleZodBodyError(parsed, res)) return;
 
+    const isEmail = parsed.data.contact.includes("@")
     const dataUser: RegisterParam = {
-        username : parsed.data.email.split("@")[0],
-        email: parsed.data.email
+        username : isEmail ? parsed.data.contact.split("@")[0] : parsed.data.contact,
+        contact: parsed.data.contact,
+        isEmail: isEmail
     }
     const result = await registration.register(dataUser);
 

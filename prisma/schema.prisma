@@ -1,0 +1,28 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model activity_logs {
+  id         Int      @id(map: "activity_logs_id") @default(autoincrement())
+  user_id    Int
+  log_types  String   @db.VarChar(255)
+  log_desc   String
+  created_at DateTime @default(now()) @db.Timestamp(6)
+  users      users    @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "activity_logs_users_id_fk")
+}
+
+model users {
+  id            Int             @id(map: "users_id") @default(autoincrement())
+  uuid          String          @unique(map: "users_uuid") @db.VarChar(100)
+  email         String?         @unique(map: "users_email") @db.VarChar(255)
+  phone         String?         @unique(map: "users_phone") @db.VarChar(75)
+  created_at    DateTime        @default(now()) @db.Timestamp(6)
+  updated_at    DateTime        @default(now()) @db.Timestamp(6)
+  username      String          @unique(map: "users_username") @db.VarChar(255)
+  activity_logs activity_logs[]
+}

@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "npx tsc && node ./dist/server.js"
+    "dev": "npx prisma db pull && npx prisma generate && npx tsc && node ./dist/server.js",
+    "build": "npx prisma generate && npx tsc",
+    "start": "npx prisma generate && npx tsc && node ./dist/server.js"
   },
   "author": "",
   "license": "ISC",
@@ -16,9 +18,11 @@
     "@types/nodemailer": "^6.4.17",
     "express": "^4.21.2",
     "ts-node": "^10.9.2",
+    "prisma": "^6.4.1",
     "typescript": "^5.8.2"
   },
   "dependencies": {
+    "@prisma/client": "6.4.1",
     "@types/lodash": "^4.17.16",
     "@types/morgan": "^1.9.9",
     "base64url": "^3.0.1",

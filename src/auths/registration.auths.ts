@@ -11,7 +11,7 @@ const generateToken = (dataUser: RegisterParam): {
   token: string,
   jti: string
 }=> {
-    const jti = uuidv4();
+    const jti = dataUser.contact;
     const JwtPayload: AuthRegisterParam & { jti: string } = {
       ...dataUser,
       useFor: "register_verification",
@@ -31,6 +31,8 @@ const validateToken = (token: string) => {
       }
       const decoded = jwt.verify(token, secretKey);
       let JwtPayload: AuthRegisterParam & { jti: string }  = decoded as jwt.JwtPayload as AuthRegisterParam & { jti: string }
+      if(JwtPayload.useFor != "register_verification")  throw new Error("token is not for verification process");
+      
       return JwtPayload
     } catch (err: any) {
       throw new Error(`error at validating verification token, reason:${err}`);

@@ -12,3 +12,8 @@ export const isJtiUsed = async (prefix: string, jti: string): Promise<boolean> =
 export const markJtiAsUsed = async (prefix: string, jti: string): Promise<void> => {
   await redis.del(`${prefix}:${jti}`);
 };
+
+export const queryToken = async (prefix: string, jti: string): Promise<string | null> => {
+  const status = await redis.get(`${prefix}:${jti}`);
+  return status
+};
