@@ -4,6 +4,6 @@ import * as pin from '../controllers/pin.controllers'
 
 router
   .post("/create", pin.create)
-  // .get("/verify", registration.verify)
+  .post("/change", pin.change)
 
 export default router

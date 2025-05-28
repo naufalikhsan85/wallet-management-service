@@ -21,6 +21,7 @@ const getPINByUser = async(uuid: string)=>{
             list_pin: {
                 select: {
                     pin_hash: true,
+                    salt: true,
                     id: true
                 }
             }
