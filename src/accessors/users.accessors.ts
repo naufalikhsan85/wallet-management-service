@@ -11,6 +11,22 @@ const getByContact = async(contact: string, isEmail: boolean)=>{
     })
 }
 
+const getPINByUser = async(uuid: string)=>{
+    let obj: any = {}
+    obj["uuid"] =  uuid
+
+    return await prisma.users.findFirst({
+        where: obj,
+        include: {
+            list_pin: {
+                select: {
+                    pin_hash: true,
+                    id: true
+                }
+            }
+        }
+    })
+}
 
 const create = async(createUserParam: CreateUser) =>{
     return await prisma.users.create({
@@ -26,5 +42,6 @@ const create = async(createUserParam: CreateUser) =>{
 
 export {
     getByContact,
+    getPINByUser,
     create
 }

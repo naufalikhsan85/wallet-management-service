@@ -1,8 +1,8 @@
 
 type RegisterParam = {
-    username: string,
-    contact: string,
-    isEmail: boolean
+    username: string;
+    contact: string;
+    isEmail: boolean;
 }
 
 export {

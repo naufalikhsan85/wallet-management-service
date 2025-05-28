@@ -25,4 +25,17 @@ model users {
   updated_at    DateTime        @default(now()) @db.Timestamp(6)
   username      String          @unique(map: "users_username") @db.VarChar(255)
   activity_logs activity_logs[]
+  list_pin      list_pin?
+}
+
+model list_pin {
+  id         Int      @id(map: "list_pin_pk") @default(autoincrement())
+  user_id    Int      @unique(map: "list_pin_pk_2")
+  pin_hash   String   @unique(map: "list_pin_pk_3")
+  salt       String   @unique(map: "list_pin_pk_4") @db.VarChar(75)
+  max_try    Int      @default(3)
+  num_tried  Int      @default(0)
+  updated_at DateTime @default(now()) @db.Timestamp(6)
+  created_at DateTime @default(now()) @db.Timestamp(6)
+  users      users    @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "list_pin_users_id_fk")
 }

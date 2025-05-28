@@ -9,6 +9,24 @@ const emitRegistrationEvent = async(userId: number, desc: string) =>{
     })
 }
 
+const emitPINCreationEvent = async(userId: number, desc: string) =>{
+    await create({
+        user_id: userId,
+        log_types: "PIN Creation",
+        log_desc: desc
+    })
+}
+
+const emitPINResetEvent = async(userId: number, desc: string) =>{
+    await create({
+        user_id: userId,
+        log_types: "PIN RESET",
+        log_desc: desc
+    })
+}
+
 export {
-    emitRegistrationEvent
+    emitRegistrationEvent,
+    emitPINCreationEvent,
+    emitPINResetEvent
 }

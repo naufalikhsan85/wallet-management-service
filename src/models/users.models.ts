@@ -1,8 +1,8 @@
 type CreateUser = {
-    uuid: string,
-    username: string,
-    email: string,
-    phone: string,
+    uuid: string;
+    username: string;
+    email: string;
+    phone: string;
 }
 
 export {
