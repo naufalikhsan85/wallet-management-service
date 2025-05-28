@@ -9,17 +9,19 @@ import { sendRegisterVerificationEmail } from "./mail.services";
 import { cacheJti, isJtiUsed, markJtiAsUsed, queryToken } from "./token-caches.services";
 import { emitRegistrationEvent } from "./activityLogs.services";
 import { RedisConfig } from "../configs/redis.configs";
+import { formatMessage } from "../utils/message.utils";
+import { messages } from "../message/registration.message";
 
 const PREFIX = 'verify-token';
 
 const register = async(dataUser: RegisterParam)=>{
     //apakah sudah request token
     const tokenCheck = await queryToken(PREFIX, dataUser.contact);
-    if (tokenCheck) throw new Error("you already request for registration with this contact, please check your email or phone message")
+    if (tokenCheck) throw new Error(formatMessage(messages, "REGISTRATION_ALREADY_REQUESTED"))
 
     //check apakah contact sudah dipakai
     let checked = await getByContact(dataUser.contact, dataUser.isEmail)
-    if(checked) throw new Error("contact already regitered, please use other contact")
+    if(checked) throw new Error(formatMessage(messages, "CONTACT_ALREADY_REGISTERED"))
 
     //create token
     let raw = generateToken(dataUser)
@@ -41,7 +43,7 @@ const register = async(dataUser: RegisterParam)=>{
     
     
     return {
-        message: "success send verification method"
+        message: dataUser.isEmail ? formatMessage(messages, "VERIFICATION_SENT_EMAIL", {contact: dataUser.contact}): formatMessage(messages, "VERIFICATION_SENT_PHONE", {contact: dataUser.contact}), 
     }
 }
 
@@ -51,7 +53,7 @@ const verify = async(token: string): Promise<RegisterParam> =>{
 
     //apakah token pernah digunakan untuk validasi
     const tokenUsed = await isJtiUsed(PREFIX, dataUser.jti);
-    if (tokenUsed) throw new Error("token already used for verification")
+    if (tokenUsed) throw new Error(formatMessage(messages, "TOKEN_ALREADY_USED"))
     await markJtiAsUsed(PREFIX, dataUser.jti);
 
     //create user
@@ -64,12 +66,13 @@ const verify = async(token: string): Promise<RegisterParam> =>{
 
     })
 
+    let emit_message = formatMessage(messages, "REGISTRATION_EVENT_EMITTED", {userId: result.id.toString()})
     await emitRegistrationEvent(
         result.id, 
-        dataUser.isEmail ? "registered with email" : "registered with phone"
+        dataUser.isEmail ? emit_message + "(email)" : emit_message + "(phone)"
     )
     
-    return dataUser
+    return Object.assign(dataUser, { message : formatMessage(messages, "VERIFICATION_SUCCESS", {username: dataUser.username}) })
 }
 
 export {
