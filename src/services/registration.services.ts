@@ -15,42 +15,42 @@ import { messages } from "../message/registration.message";
 
 const PREFIX = 'verify-token';
 
-const register = async(dataUser: RegisterParam)=>{
+const register = async (dataUser: RegisterParam) => {
     //apakah sudah request token
-    const tokenCheck = await queryToken(PREFIX, dataUser.contact);
-    if (tokenCheck) throw new Error(formatMessage(messages, "REGISTRATION_ALREADY_REQUESTED"))
+    // const tokenCheck = await queryToken(PREFIX, dataUser.contact);
+    // if (tokenCheck) throw new Error(formatMessage(messages, "REGISTRATION_ALREADY_REQUESTED"))
 
     //check apakah contact sudah dipakai
     let checked = await getByContact(dataUser.contact, dataUser.isEmail)
-    if(checked) throw new Error(formatMessage(messages, "CONTACT_ALREADY_REGISTERED"))
+    if (checked) throw new Error(formatMessage(messages, "CONTACT_ALREADY_REGISTERED"))
 
     //create token
     let raw = generateToken(dataUser)
     let token = await compressToken(raw.token)
     await cacheJti(PREFIX, raw.jti, 60 * RedisConfig.REDIS_REGIS_EXPIRITY); //in second * minute
 
-    if(dataUser.isEmail){ //send email
-        await sendRegisterVerificationEmail({ 
-            email: dataUser.contact, 
-            token: token, 
-            username: dataUser.username, 
+    if (dataUser.isEmail) { //send email
+        await sendRegisterVerificationEmail({
+            email: dataUser.contact,
+            token: token,
+            username: dataUser.username,
             expirity: MailConfig.VERIFICATION_EXPIRITY,
             baseUrl: MailConfig.VERIFICATION_URL
         })
     }
-    else{   //send phone
+    else {   //send phone
 
     }
-    
-    
+
+
     return {
-        message: dataUser.isEmail ? formatMessage(messages, "VERIFICATION_SENT_EMAIL", {contact: dataUser.contact}): formatMessage(messages, "VERIFICATION_SENT_PHONE", {contact: dataUser.contact}), 
+        message: dataUser.isEmail ? formatMessage(messages, "VERIFICATION_SENT_EMAIL", { contact: dataUser.contact }) : formatMessage(messages, "VERIFICATION_SENT_PHONE", { contact: dataUser.contact }),
     }
 }
 
-const verify = async(token: string): Promise<RegisterParam> =>{
+const verify = async (token: string): Promise<RegisterParam> => {
     //validasi
-    let dataUser: AuthRegisterParam & { jti: string }= validateToken(await decompressToken(token));
+    let dataUser: AuthRegisterParam & { jti: string } = validateToken(await decompressToken(token));
 
     //apakah token pernah digunakan untuk validasi
     const tokenUsed = await isJtiUsed(PREFIX, dataUser.jti);
@@ -67,20 +67,20 @@ const verify = async(token: string): Promise<RegisterParam> =>{
 
     })
 
-    let emit_message = formatMessage(messages, "REGISTRATION_EVENT_EMITTED", {userId: result.id.toString()})
+    let emit_message = formatMessage(messages, "REGISTRATION_EVENT_EMITTED", { userId: result.id.toString() })
     await emitRegistrationEvent(
-        result.id, 
+        result.id,
         dataUser.isEmail ? emit_message + "(email)" : emit_message + "(phone)"
     )
-    
+
     //add user account
-    let resultUserAccounts = await createOnAccounts({uuid: newUUID})
+    let resultUserAccounts = await createOnAccounts({ uuid: newUUID })
 
     //add default wallet account
 
 
 
-    return Object.assign(dataUser, { message : formatMessage(messages, "VERIFICATION_SUCCESS", {username: dataUser.username}) })
+    return Object.assign(dataUser, { message: formatMessage(messages, "VERIFICATION_SUCCESS", { username: dataUser.username }) })
 }
 
 export {

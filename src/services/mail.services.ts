@@ -6,31 +6,31 @@ import { shortenUrl } from './shortener.service';
 import { APPConfig } from '../configs/app.configs';
 
 const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 587,
-  secure: false, // pakai STARTTLS
+  host: MailConfig.EMAIL_PROVIDER_HOST,
+  port: Number(MailConfig.EMAIL_PROVIDER_PORT),
+  secure: true,
   auth: {
     user: MailConfig.EMAIL_ADDRESS,
     pass: MailConfig.EMAIL_PASS,
   },
   tls: {
-    rejectUnauthorized: false, //hanya untuk dev atau jaringan bermasalah
+    rejectUnauthorized: false,
   },
 });
 
 const sendRegisterVerificationEmail = async ({
-  username, 
+  username,
   expirity,
   email,
   token,
   baseUrl = 'http://localhost:8080/v1/registration/verify?token=',
-}: SendVerificationEmailParams): Promise<void> =>{
+}: SendVerificationEmailParams): Promise<void> => {
   const raw_url = `${baseUrl}${token}`;
   const verifyUrl = APPConfig.RESOLVER + await shortenUrl(raw_url)
   const htmlContent = await loadRegisterVerificationEmailTemplate(verifyUrl, username, expirity);
 
   const mailOptions = {
-    from: `"Wallet-Management-Services" <${process.env.EMAIL_USER}>`,
+    from: `"Wallet-Management-Services" <${process.env.EMAIL_ADDRESS}>`,
     to: email,
     subject: 'Verify your email',
     html: htmlContent
@@ -39,7 +39,7 @@ const sendRegisterVerificationEmail = async ({
   await transporter.sendMail(mailOptions);
 }
 
-const loadRegisterVerificationEmailTemplate = async(verifyUrl: string, username: string, expirity: string): Promise<string> => {
+const loadRegisterVerificationEmailTemplate = async (verifyUrl: string, username: string, expirity: string): Promise<string> => {
   const templatePath = "./src/templates/register-verification-email.html"
   let template = fs.readFileSync(templatePath, 'utf-8');
 
@@ -51,5 +51,5 @@ const loadRegisterVerificationEmailTemplate = async(verifyUrl: string, username:
 }
 
 export {
-    sendRegisterVerificationEmail
+  sendRegisterVerificationEmail
 }
