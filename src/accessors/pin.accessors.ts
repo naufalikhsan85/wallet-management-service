@@ -1,4 +1,4 @@
-import prisma from "../../prisma/prisma.connection"
+import prisma from "../../prisma/main/prisma.connection"
 import { CreatePIN, UpdatePIN } from "../models/listPIN.models"
 import { convertUnixTimestampToPrismaDateTime, currentDate } from "../utils/main.utils"
 

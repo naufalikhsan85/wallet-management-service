@@ -13,7 +13,6 @@ const generateSalt = (length: number = 16): string => {
   return salt;
 };
 
-
 const hashWithSalt = (input: string, salt: string): string => {
   return createHash('sha256')
     .update(input + salt)
@@ -35,11 +34,26 @@ const currentDate = () => {
 const convertUnixTimestampToPrismaDateTime = (unixTimestamp: number): Date =>{
     return new Date(unixTimestamp * 1000);
 }
+
+const generateAlphanumericCode = (
+    chunkCount: number = 8,
+    chunkLength: number = 8,
+    characters: string = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789!$%*+-_=?.'
+): string => {
+  const randomChunk = () =>
+      Array.from({ length: chunkLength }, () =>
+        characters.charAt(Math.floor(Math.random() * characters.length))
+      ).join('');
+
+    return Array.from({ length: chunkCount }, () => randomChunk()).join('-');
+};
+
 export {
     generateSalt,
     hashWithSalt,
     hashWithArgon2,
     verifyArgon2Hash,
     currentDate,
-    convertUnixTimestampToPrismaDateTime
+    convertUnixTimestampToPrismaDateTime,
+    generateAlphanumericCode
 }

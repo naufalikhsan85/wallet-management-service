@@ -1,0 +1,36 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../node_modules/@prisma/accounts-client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL_ACCOUNTS")
+}
+
+model accounts {
+  id           Int          @id(map: "accounts_pk_id") @default(autoincrement())
+  user_id      Int
+  pub_key      String       @unique(map: "accounts_pk_pubkey") @db.VarChar(150)
+  priv_key     String
+  wallet_type  Int
+  created_at   DateTime     @default(now()) @db.Timestamp(6)
+  updated_at   DateTime     @default(now()) @db.Timestamp(6)
+  active_users active_users @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "accounts_active_users_id_fk")
+  wallet_types wallet_types @relation(fields: [wallet_type], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "accounts_wallet_types_id_fk")
+}
+
+model active_users {
+  id         Int        @id(map: "active_users_pk_id") @default(autoincrement())
+  uuid       String     @unique(map: "active_users_pk_uuid") @db.VarChar(150)
+  created_at DateTime   @default(now()) @db.Timestamp(6)
+  accounts   accounts[]
+}
+
+model wallet_types {
+  id          Int        @id(map: "wallet_types_pk_id") @default(autoincrement())
+  description String     @unique(map: "wallet_types_desc") @db.VarChar(150)
+  created_at  DateTime   @default(now()) @db.Timestamp(6)
+  updated_at  DateTime   @default(now()) @db.Timestamp(6)
+  accounts    accounts[]
+}

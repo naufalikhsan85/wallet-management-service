@@ -1,4 +1,5 @@
 import { create, getByContact } from "../accessors/users.accessors";
+import { create as createOnAccounts } from "../accessors/accountsClient/activeUsers.accessors";
 import { generateToken, validateToken } from "../auths/registration.auths";
 import { MailConfig } from "../configs/mail.configs";
 import { AuthRegisterParam } from "../types/auth.types";
@@ -72,6 +73,13 @@ const verify = async(token: string): Promise<RegisterParam> =>{
         dataUser.isEmail ? emit_message + "(email)" : emit_message + "(phone)"
     )
     
+    //add user account
+    let resultUserAccounts = await createOnAccounts({uuid: newUUID})
+
+    //add default wallet account
+
+
+
     return Object.assign(dataUser, { message : formatMessage(messages, "VERIFICATION_SUCCESS", {username: dataUser.username}) })
 }
 

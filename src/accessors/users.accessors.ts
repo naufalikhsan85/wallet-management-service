@@ -1,4 +1,4 @@
-import prisma from "../../prisma/prisma.connection"
+import prisma from "../../prisma/main/prisma.connection"
 import { CreateUser } from "../models/users.models"
 
 const getByContact = async(contact: string, isEmail: boolean)=>{

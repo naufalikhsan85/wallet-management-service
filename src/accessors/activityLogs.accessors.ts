@@ -1,4 +1,4 @@
-import prisma from "../../prisma/prisma.connection"
+import prisma from "../../prisma/main/prisma.connection"
 import { CreateLog } from "../models/activityLogs.models"
 
 const create = async(createParam: CreateLog) =>{
