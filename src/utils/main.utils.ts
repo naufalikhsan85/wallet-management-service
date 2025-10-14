@@ -1,4 +1,5 @@
 import { createHash } from 'crypto';
+import { Wallet } from "ethers";
 import argon2 from 'argon2';
 
 const generateSalt = (length: number = 16): string => {
@@ -28,32 +29,49 @@ const verifyArgon2Hash = async (input: string, hashed: string): Promise<boolean>
 };
 
 const currentDate = () => {
-    return Math.floor(new Date().getTime() / 1000);
+  return Math.floor(new Date().getTime() / 1000);
 }
 
-const convertUnixTimestampToPrismaDateTime = (unixTimestamp: number): Date =>{
-    return new Date(unixTimestamp * 1000);
+const convertUnixTimestampToPrismaDateTime = (unixTimestamp: number): Date => {
+  return new Date(unixTimestamp * 1000);
 }
 
 const generateAlphanumericCode = (
-    chunkCount: number = 8,
-    chunkLength: number = 8,
-    characters: string = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789!$%*+-_=?.'
+  chunkCount: number = 8,
+  chunkLength: number = 8,
+  characters: string = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789!$%*+-_=?.'
 ): string => {
   const randomChunk = () =>
-      Array.from({ length: chunkLength }, () =>
-        characters.charAt(Math.floor(Math.random() * characters.length))
-      ).join('');
+    Array.from({ length: chunkLength }, () =>
+      characters.charAt(Math.floor(Math.random() * characters.length))
+    ).join('');
 
-    return Array.from({ length: chunkCount }, () => randomChunk()).join('-');
+  return Array.from({ length: chunkCount }, () => randomChunk()).join('-');
 };
 
+const generatePrivateKeyFromSeed = (seed: string) => {
+  if (!seed) throw new Error("seed required");
+  const hash = createHash("sha256").update(seed).digest("hex");
+  return "0x" + hash;
+}
+
+const generateWallet = (privateKeyHex: string) => {
+  const pk = privateKeyHex.startsWith("0x") ? privateKeyHex : "0x" + privateKeyHex;
+  const wallet = new Wallet(pk);
+  return {
+    privateKey: wallet.privateKey,
+    address: wallet.address,
+  };
+}
+
 export {
-    generateSalt,
-    hashWithSalt,
-    hashWithArgon2,
-    verifyArgon2Hash,
-    currentDate,
-    convertUnixTimestampToPrismaDateTime,
-    generateAlphanumericCode
+  generateSalt,
+  hashWithSalt,
+  hashWithArgon2,
+  verifyArgon2Hash,
+  currentDate,
+  convertUnixTimestampToPrismaDateTime,
+  generateAlphanumericCode,
+  generateWallet,
+  generatePrivateKeyFromSeed
 }

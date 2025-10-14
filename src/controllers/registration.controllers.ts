@@ -13,9 +13,9 @@ const register = async (req: Request, res: Response) => {
 
     const isEmail = parsed.data.contact.includes("@")
     const dataUser: RegisterParam = {
-        username : isEmail ? parsed.data.contact.split("@")[0] : parsed.data.contact,
-        contact: parsed.data.contact,
-        isEmail: isEmail
+      username: isEmail ? parsed.data.contact.split("@")[0] : parsed.data.contact,
+      contact: parsed.data.contact,
+      isEmail: isEmail
     }
     const result = await registration.register(dataUser);
 
@@ -36,14 +36,23 @@ const verify = async (req: Request, res: Response) => {
 
     if (!handleZodParamsError(parsed, res)) return;
 
-    let result = await registration.verify(parsed.data.token);
-
+    let result: RegisterParam & {
+      useFor: string;
+    } & {
+      jti: string;
+      uuid?: string;
+      token?: string;
+    } = await registration.verify(parsed.data.token);
+    console.log(result);
+    
     const templatePath = "./src/templates/register-verified.html"
     let template = fs.readFileSync(templatePath, 'utf-8');
     template = template
-              .replace(/{{username}}/g, result.username)
-              .replace(/{{contact}}/g, result.contact)
-              .replace(/{{registered_with}}/g, result.isEmail ? "email" : "phone number");
+      .replace(/{{username}}/g, result.username)
+      .replace(/{{contact}}/g, result.contact)
+      .replace(/{{registered_with}}/g, result.isEmail ? "email" : "phone number")
+      .replace(/{{uuid}}/g, result.uuid || '')
+      .replace(/{{token}}/g, result.token || '');
 
     res.status(200).send(template);
     return
@@ -57,6 +66,6 @@ const verify = async (req: Request, res: Response) => {
 };
 
 export {
-    register,
-    verify
+  register,
+  verify
 }

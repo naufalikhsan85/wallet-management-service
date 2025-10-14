@@ -17,7 +17,7 @@ const register = async (req: Request, res: Response) => {
   const shortCode = nanoid(6);
 
   try {
-    const result = await redis.set(`${prefix}:${shortCode}`, url, 'EX', 60 * Number(process.env.REDIS_REGIS_EXPIRITY) )
+    const result = await redis.set(`${prefix}:${shortCode}`, url, 'EX', 60 * Number(process.env.REDIS_REGIS_EXPIRITY))
 
     if (result !== 'OK') {
       throw new Error('Redis SET failed');
@@ -32,7 +32,7 @@ const register = async (req: Request, res: Response) => {
   }
 };
 
-const resolve =  async (req: Request, res: Response) => {
+const resolve = async (req: Request, res: Response) => {
   const { short } = req.params;
 
   try {
@@ -53,6 +53,6 @@ const resolve =  async (req: Request, res: Response) => {
 }
 
 export {
-    register,
-    resolve
+  register,
+  resolve
 }

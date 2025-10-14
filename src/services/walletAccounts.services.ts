@@ -1,16 +1,51 @@
-import { create } from "../accessors/accountsClient/accounts.accessors"
-import { generateAlphanumericCode } from "../utils/main.utils"
+import { PrismaClient } from "@prisma/accounts-client";
 
+const prisma = new PrismaClient();
 
-const generateInternal =  async(user_id: number) =>{
-    const newPrivKey = generateAlphanumericCode(16, 8)
-    const newPubKey = ""
-
-    await create({
-        priv_key: newPrivKey,
-        pub_key: newPubKey,
-        wallet_type: 1,
-        user_id: user_id
-    })
+interface CreateAccountParams {
+    user_uuid: string;      
+    pub_key: string;
+    priv_key: string;
+    wallet_type_description: string;
 }
 
+export async function createAccount({
+    user_uuid,
+    pub_key,
+    priv_key,
+    wallet_type_description,
+}: CreateAccountParams) {
+    try {
+        const user = await prisma.active_users.findUnique({
+            where: { uuid: user_uuid },
+        });
+        if (!user) {
+            throw new Error(`Active user with uuid ${user_uuid} not found`);
+        }
+
+        const walletType = await prisma.wallet_types.findUnique({
+            where: { description: wallet_type_description },
+        });
+        if (!walletType) {
+            throw new Error(`Wallet type '${wallet_type_description}' not found`);
+        }
+
+        const newAccount = await prisma.accounts.create({
+            data: {
+                user_id: user.id,
+                pub_key,
+                priv_key,
+                wallet_type: walletType.id,
+            },
+            include: {
+                active_users: true,
+                wallet_types: true,
+            },
+        });
+
+        return newAccount;
+    } catch (error) {
+        console.error("Error creating account:", error);
+        throw error;
+    }
+}

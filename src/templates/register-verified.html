@@ -1,92 +1,212 @@
 <!DOCTYPE html>
 <html lang="id">
-<head>
-  <meta charset="UTF-8" />
-  <title>Verifikasi Berhasil</title>
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: Arial, sans-serif;
-      background-color: #f4f4f4;
-      height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .container {
-      width: 100%;
-      max-width: 600px;
-      background-color: #ffffff;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
-
-    .header {
-      background-color: #4a90e2;
-      padding: 20px;
-      text-align: center;
-      color: #ffffff;
-    }
-
-    .content {
-      padding: 30px;
-      color: #333333;
-      text-align: center;
-    }
-
-    .content p {
-      font-size: 16px;
-    }
-
-    .content ul {
-      list-style: none;
-      padding-left: 0;
-      font-size: 16px;
-      margin-top: 1.5rem;
-      text-align: left;
-      display: inline-block;
-    }
-
-    .footer {
-      background-color: #f0f0f0;
-      text-align: center;
-      padding: 15px;
-      font-size: 12px;
-      color: #999999;
-    }
-
-    @media (max-width: 600px) {
-      .content {
-        padding: 20px;
+  <head>
+    <meta charset="UTF-8" />
+    <title>Verifikasi Berhasil</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="header">
-      <h1 style="margin: 0; font-size: 24px;">Verifikasi Berhasil</h1>
-    </div>
-    <div class="content">
-      <p>Selamat, <strong>{{username}}</strong></p>
-      <p>Akun Anda telah berhasil diverifikasi. Berikut detail yang terdaftar:</p>
 
-      <ul>
-        <li><strong>👤 Username:</strong> {{username}}</li>
-        <li><strong>📧 Contact:</strong> {{contact}}</li>
-        <li><strong>📱 Registered With:</strong> {{registered_with}}</li>
-      </ul>
+      .container {
+        width: 100%;
+        max-width: 600px;
+        background-color: #ffffff;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
 
-      <p style="font-size: 14px; color: #666666; margin-top: 30px;">
-        Silakan tutup halaman ini atau lanjutkan menggunakan aplikasi seperti biasa.
-      </p>
+      .header {
+        background-color: #4a90e2;
+        padding: 20px;
+        text-align: center;
+        color: #ffffff;
+      }
+
+      .content {
+        padding: 30px;
+        color: #333333;
+        text-align: center;
+      }
+
+      .content p {
+        font-size: 16px;
+      }
+
+      .content ul {
+        list-style: none;
+        padding-left: 0;
+        font-size: 16px;
+        margin-top: 1.5rem;
+        text-align: left;
+        display: inline-block;
+      }
+
+      form {
+        margin-top: 30px;
+        text-align: center;
+      }
+
+      input[type="password"] {
+        width: 100%;
+        max-width: 200px;
+        padding: 10px;
+        font-size: 20px;
+        text-align: center;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        outline: none;
+        letter-spacing: 5px;
+      }
+
+      input[type="hidden"] {
+        display: none;
+      }
+
+      button {
+        margin-top: 15px;
+        background-color: #4a90e2;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 16px;
+      }
+
+      button:hover {
+        background-color: #357abd;
+      }
+
+      .message {
+        margin-top: 15px;
+        font-size: 14px;
+      }
+
+      .footer {
+        background-color: #f0f0f0;
+        text-align: center;
+        padding: 15px;
+        font-size: 12px;
+        color: #999999;
+      }
+
+      @media (max-width: 600px) {
+        .content {
+          padding: 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1 style="margin: 0; font-size: 24px">Verifikasi Berhasil</h1>
+      </div>
+
+      <div class="content">
+        <p>Selamat, <strong>{{username}}</strong></p>
+        <p>
+          Akun Anda telah berhasil diverifikasi. Berikut detail yang terdaftar:
+        </p>
+
+        <ul>
+          <li><strong>👤 Username:</strong> {{username}}</li>
+          <li><strong>📧 Contact:</strong> {{contact}}</li>
+          <li><strong>📱 Registered With:</strong> {{registered_with}}</li>
+        </ul>
+
+        <p style="font-size: 14px; color: #666666; margin-top: 30px">
+          Silakan tutup halaman ini atau lanjutkan menggunakan aplikasi seperti
+          biasa.
+        </p>
+
+        <!-- 🔐 NEW SECTION: Buat PIN -->
+        <hr style="margin: 40px 0; border: 0; border-top: 1px solid #ddd" />
+        <h3 style="margin-bottom: 10px">Buat PIN Anda</h3>
+
+        <form id="pinForm">
+          <!-- Hidden UUID & TOKEN injected from backend -->
+          <input type="hidden" id="uuid" name="uuid" value="{{uuid}}" />
+          <input type="hidden" id="token" name="token" value="{{token}}" />
+
+          <input
+            type="password"
+            id="pin"
+            name="pin"
+            maxlength="4"
+            minlength="4"
+            pattern="[0-9]{4}"
+            placeholder="••••"
+            required
+          />
+
+          <br />
+          <button type="submit">Simpan PIN</button>
+          <div id="msg" class="message"></div>
+        </form>
+      </div>
+
+      <div class="footer">
+        &copy; 2025 Wallet-Management-Services. All rights reserved.
+      </div>
     </div>
-    <div class="footer">
-      &copy; 2025 Wallet-Management-Services. All rights reserved.
-    </div>
-  </div>
-</body>
+
+    <script>
+      async function sha256(message) {
+        const msgBuffer = new TextEncoder().encode(message);
+        const hashBuffer = await crypto.subtle.digest("SHA-256", msgBuffer);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+      }
+
+      const form = document.getElementById("pinForm");
+      const msg = document.getElementById("msg");
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const pin = document.getElementById("pin").value;
+        const uuid = document.getElementById("uuid").value;
+        const token = document.getElementById("token").value;
+
+        if (!/^[0-9]{4}$/.test(pin)) {
+          msg.textContent = "PIN harus terdiri dari 4 angka.";
+          msg.style.color = "red";
+          return;
+        }
+
+        const pin_hash = await sha256(pin);
+        const payload = { uuid, token, pin_hash };
+
+        try {
+          const res = await fetch("http://localhost:8080/v1/pin/create", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+
+          const data = await res.json();
+
+          if (res.ok) {
+            msg.textContent = data.message || "PIN berhasil dibuat.";
+            msg.style.color = "green";
+          } else {
+            msg.textContent = data.error || "Gagal membuat PIN.";
+            msg.style.color = "red";
+          }
+        } catch (err) {
+          msg.textContent = "Terjadi kesalahan jaringan.";
+          msg.style.color = "red";
+        }
+      });
+    </script>
+  </body>
 </html>

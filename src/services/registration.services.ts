@@ -48,9 +48,15 @@ const register = async (dataUser: RegisterParam) => {
     }
 }
 
-const verify = async (token: string): Promise<RegisterParam> => {
+const verify = async (token: string): Promise<RegisterParam & {
+    useFor: string;
+} & {
+    jti: string;
+    uuid?: string;
+    token?: string;
+}> => {
     //validasi
-    let dataUser: AuthRegisterParam & { jti: string } = validateToken(await decompressToken(token));
+    let dataUser: AuthRegisterParam & { jti: string, uuid?: string, token?: string } = validateToken(await decompressToken(token));
 
     //apakah token pernah digunakan untuk validasi
     const tokenUsed = await isJtiUsed(PREFIX, dataUser.jti);
@@ -59,6 +65,10 @@ const verify = async (token: string): Promise<RegisterParam> => {
 
     //create user
     const newUUID = uuidv4()
+    dataUser.token = uuidv4()
+    dataUser.uuid = newUUID;
+    await cacheJti("TokenPIN", dataUser.token, 300)
+
     let result = await create({
         uuid: newUUID,
         username: dataUser.username,
@@ -80,7 +90,11 @@ const verify = async (token: string): Promise<RegisterParam> => {
 
 
 
-    return Object.assign(dataUser, { message: formatMessage(messages, "VERIFICATION_SUCCESS", { username: dataUser.username }) })
+    return Object.assign(dataUser, {
+        message: formatMessage(messages, "VERIFICATION_SUCCESS", {
+            username: dataUser.username,
+        })
+    });
 }
 
 export {
