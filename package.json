@@ -23,13 +23,13 @@
     "typescript": "^5.8.3"
   },
   "dependencies": {
-    "core-account-abstraction-sdk": "file:../core-account-abstraction-sdk",
     "@prisma/client": "6.4.1",
     "@types/lodash": "^4.17.16",
     "@types/morgan": "^1.9.9",
     "argon2": "^0.43.0",
     "axios": "^1.9.0",
     "base64url": "^3.0.1",
+    "core-account-abstraction-sdk": "file:../core-account-abstraction-sdk",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "ethers": "^6.15.0",
@@ -39,6 +39,7 @@
     "morgan": "^1.10.0",
     "nodemailer": "^7.0.3",
     "uuid": "^11.1.0",
+    "web3": "^4.16.0",
     "zod": "^3.24.2"
   }
 }

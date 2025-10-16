@@ -4,9 +4,9 @@ import { PINCreationSchema, PINUpdateSchema } from '../validations/pin.validatio
 import { PINCreationParam, PINUpdateParam } from '../types/pin.types';
 import { change as changePIN, createOrReset } from '../services/pin.services';
 import { markJtiAsUsed, queryToken } from '../services/token-caches.services';
-import { createNewWallet } from "core-account-abstraction-sdk";
 import { generatePrivateKeyFromSeed, generateWallet } from '../utils/main.utils';
 import { createAccount } from '../services/walletAccounts.services';
+import { createNewWallet } from "core-account-abstraction-sdk";
 
 const create = async (req: Request, res: Response) => {
   try {
@@ -31,7 +31,7 @@ const create = async (req: Request, res: Response) => {
     const walletAddress = await createNewWallet([wallet.address], pinData.uuid);
 
     const result = await createOrReset(pinData)
-    const resultAccount = await createAccount({ user_uuid: pinData.uuid, priv_key: wallet.address, pub_key: walletAddress.walletAddress, wallet_type_description: "1" })
+    const resultAccount = await createAccount({ user_uuid: pinData.uuid, priv_key: privateKey, pub_key: walletAddress.walletAddress, wallet_type_description: "1" })
 
     res.status(200).send({ pin: { ...result }, account: { ...resultAccount } });
     return

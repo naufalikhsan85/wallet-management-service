@@ -1,9 +1,7 @@
-import { PrismaClient } from "@prisma/accounts-client";
-
-const prisma = new PrismaClient();
-
+import prisma from "../../prisma/accounts/prisma.connection";
+import { create } from "../accessors/accountsClient/accounts.accessors"
 interface CreateAccountParams {
-    user_uuid: string;      
+    user_uuid: string;
     pub_key: string;
     priv_key: string;
     wallet_type_description: string;
@@ -30,17 +28,12 @@ export async function createAccount({
             throw new Error(`Wallet type '${wallet_type_description}' not found`);
         }
 
-        const newAccount = await prisma.accounts.create({
-            data: {
-                user_id: user.id,
-                pub_key,
-                priv_key,
-                wallet_type: walletType.id,
-            },
-            include: {
-                active_users: true,
-                wallet_types: true,
-            },
+        const newAccount = await create({
+            user_id: user.id,
+            pub_key,
+            priv_key,
+            wallet_type: walletType.id,
+
         });
 
         return newAccount;
