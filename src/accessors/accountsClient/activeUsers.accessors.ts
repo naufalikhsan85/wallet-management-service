@@ -12,6 +12,26 @@ const create = async(createParam: CreateUser) =>{
     )
 }
 
+const getUser = async(uuid: string) =>{
+    let obj: any = {}
+    obj["uuid"] =  uuid
+
+    return await prisma.active_users.findFirst({
+        where: obj,
+        include: {
+            accounts: {
+                select: {
+                    pub_key: true,
+                    wallet_type: true,
+                    id: true
+                }
+            }
+        }
+    })
+}
+
+
 export {
-    create
+    create,
+    getUser
 }

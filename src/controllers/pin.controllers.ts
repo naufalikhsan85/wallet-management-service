@@ -7,6 +7,7 @@ import { markJtiAsUsed, queryToken } from '../services/token-caches.services';
 import { generatePrivateKeyFromSeed, generateWallet } from '../utils/main.utils';
 import { createAccount } from '../services/walletAccounts.services';
 import { createNewWallet } from "core-account-abstraction-sdk";
+import { encryptPrivateKey } from '../utils/cryptography.utils';
 
 const create = async (req: Request, res: Response) => {
   try {
@@ -29,9 +30,11 @@ const create = async (req: Request, res: Response) => {
     const privateKey = generatePrivateKeyFromSeed(pinData.uuid);
     const wallet = generateWallet(privateKey);
     const walletAddress = await createNewWallet([wallet.address], pinData.uuid);
+    
+    const encryptedPrivKey = encryptPrivateKey(privateKey, pinData.pin_hash, pinData.uuid);
 
     const result = await createOrReset(pinData)
-    const resultAccount = await createAccount({ user_uuid: pinData.uuid, priv_key: privateKey, pub_key: walletAddress.walletAddress, wallet_type_description: "1" })
+    const resultAccount = await createAccount({ user_uuid: pinData.uuid, priv_key: encryptedPrivKey, pub_key: walletAddress.walletAddress, wallet_type_description: "1" })
 
     res.status(200).send({ pin: { ...result }, account: { ...resultAccount } });
     return

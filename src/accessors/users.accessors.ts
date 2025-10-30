@@ -8,6 +8,15 @@ const getByContact = async(contact: string, isEmail: boolean)=>{
 
     return await prisma.users.findFirst({
         where: obj,
+        include: {
+            list_pin: {
+                select: {
+                    pin_hash: true,
+                    salt: true,
+                    id: true
+                }
+            }
+        }
     })
 }
 
